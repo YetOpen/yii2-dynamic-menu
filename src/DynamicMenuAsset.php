@@ -10,7 +10,7 @@ use Yii;
  */
 class DynamicMenuAsset extends AssetBundle
 {
-    public $sourcePath = 'assets/sidebar-editor/assets';
+    public $sourcePath = '@vendor/esempla/yii2-dynamic-menu/src/assets/sidebar-editor/assets';
 
     public $css = [
         'bs-iconpicker/css/bootstrap-iconpicker.min.css',
