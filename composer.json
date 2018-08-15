@@ -15,7 +15,8 @@
         "php": ">=7.1.0",
         "yiisoft/yii2-composer": ">=2.0.1",
         "yiisoft/yii2": ">=2.0.1",
-        "yii2mod/yii2-sweet-alert": "*"
+        "yii2mod/yii2-sweet-alert": "*",
+        "dmstr/yii2-adminlte-asset": "^2.1"
 
     },
     "autoload": {
