@@ -7,7 +7,7 @@
 $this->title = 'Dynamic Menu Creator';
 $this->params['breadcrumbs'][] = ['label' => 'Dynamic Menu', 'url' => ['index']];
 $this->params['breadcrumbs'][] = 'Creator';
-backend\assets\DynamicMenuAsset::register(Yii::$app->view);
+esempla\dynamicmenu\DynamicMenuAsset::register(Yii::$app->view);
 //get system roles
 $roles = Yii::$app->authManager->getRoles();
 ?>

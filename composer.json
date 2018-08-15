@@ -14,7 +14,9 @@
     "require": {
         "php": ">=7.1.0",
         "yiisoft/yii2-composer": ">=2.0.1",
-        "yiisoft/yii2": ">=2.0.1"
+        "yiisoft/yii2": ">=2.0.1",
+        "yii2mod/yii2-sweet-alert": "*"
+
     },
     "autoload": {
         "psr-4": {
