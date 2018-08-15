@@ -1,6 +1,6 @@
 <?php
 
-namespace backend\models;
+namespace esempla\dynamicmenu\models;
 
 /**
  * Class DynamicMenu

@@ -25,7 +25,7 @@ to the ```require``` section of your `composer.json` file.
 The extension has been created with database table. You should execute database migrations.(*PostgreSQL &reg;* recommended)
 
 ```php
-php yii migrate/up --migrationPath=vendor/esempla/dynamic_menu/src/migrations
+php yii migrate/up --migrationPath=vendor/esempla/yii2-dynamic-menu//src/migrations
 ```
 
 ## Module
