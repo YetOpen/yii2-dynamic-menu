@@ -2,7 +2,7 @@
     "name": "esempla/yii2-dynamic-menu",
     "description": "Dynamically configurable menu",
     "type": "yii2-extensions",
-    "keywords": ["yii2", "rbac", "yii2-rbac"],
+    "keywords": ["yii2", "menu", "yii2-menu"],
     "homepage": "https://git.bts.md/synaptek/yii2-dynamic-menu/",
     "license": "MIT",
     "authors": [
