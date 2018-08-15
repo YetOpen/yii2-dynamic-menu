@@ -1,5 +1,4 @@
 <?php
-namespace esempla\dynamicmenu\migrations;
 
 use yii\db\Migration;
 
