@@ -1,0 +1,24 @@
+{
+    "name": "esempla/yii2-dynamic-menu",
+    "description": "Dynamically configurable menu",
+    "type": "yii2-extensions",
+    "keywords": ["yii2", "rbac", "yii2-rbac"],
+    "homepage": "http://git.bts.md/synaptek/rbac/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Esempla Systems",
+            "email": "isocolicov@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.0",
+        "yiisoft/yii2-composer": ">=2.0.1",
+        "yiisoft/yii2": ">=2.0.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "esempla\\dynamicmenu\\": "src"
+        }
+    }
+}
