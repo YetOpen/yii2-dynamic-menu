@@ -28,27 +28,29 @@
         public static function loadMenu($roleName = null)
         {
             $menuData = [];
+            $dates = [];
             if ($roleName === null) {
                 $roles = \Yii::$app->authManager->getRolesByUser(\Yii::$app->user->getId());
             }
-            $menu = self::find()
-                ->where(['status' => self::STATUS_ACTIVE]);
-            foreach ($roles as $key => $role) {
-                $menu->orWhere(['role' => $roleName]);
-            }
+            if (!empty($roles)) {
+                $menu = self::find();
+                foreach ($roles as $key => $role) {
+                    $menu->orWhere(['role' => $key]);
+                }
+                $menu->andWhere(['status' => self::STATUS_ACTIVE]);
+                $menuData = $menu->orderBy("row_version DESC")->all();
 
-            $menuData = $menu->orderBy("row_version DESC")->all();
-            $dates = [];
-            if ($menuData) {
-                $dates = [];
-                $auxArray = [];
-                foreach ($menuData as $data) {
+                if ($menuData) {
+                    $dates = [];
+                    $auxArray = [];
+                    foreach ($menuData as $data) {
 
-                    $dataJson = json_decode($data->menu_data, true);
-                    foreach ($dataJson as $dataJ) {
-                        if (!in_array($dataJ["href"], $auxArray)) {
-                            $dates[] = $dataJ;
-                            $auxArray[] = $dataJ["href"];
+                        $dataJson = json_decode($data->menu_data, true);
+                        foreach ($dataJson as $dataJ) {
+                            if (!in_array($dataJ["href"], $auxArray)) {
+                                $dates[] = $dataJ;
+                                $auxArray[] = $dataJ["href"];
+                            }
                         }
                     }
                 }
