@@ -24,11 +24,13 @@ class DynamicMenuWidget extends \yii\widgets\Menu
     public $defaultIconHtml = '<i class="fa fa-circle-o"></i> ';
     public $options = ['class' => 'sidebar-menu', 'data-widget' => 'tree'];
 
+    /** @var array|string Load menu items for this roles, instead of checking for the current user's ones */
+    public $roles = null;
+
     /**
      * @var string is prefix that will be added to $item['icon'] if it exist.
      * By default uses for Font Awesome (http://fontawesome.io/)
      */
-   // public static $iconClassPrefix = 'fa fa-';
     public static $iconClassPrefix = 'fa ';
 
     private $noDefaultAction;
@@ -39,7 +41,13 @@ class DynamicMenuWidget extends \yii\widgets\Menu
      */
     public function run()
     {
-        $this->items = DynamicMenu::loadMenu();
+        if (is_string($this->roles)) {
+            $this->roles = [$this->roles];
+        }
+        if (is_array($this->roles)) {
+            $this->roles = array_combine($this->roles, $this->roles);
+        }
+        $this->items = DynamicMenu::loadMenu($this->roles);
 
         if ($this->route === null && Yii::$app->controller !== null) {
             $this->route = Yii::$app->controller->getRoute();
@@ -84,12 +92,11 @@ class DynamicMenuWidget extends \yii\widgets\Menu
         $replacements = [
             '{text}' => strtr($this->textTemplate, ['{text}' => $item['text'],]),
             '{icon}' => empty($item['icon']) ? $this->defaultIconHtml
-                : '<i class="' . $item['icon'] . '"></i> ',
-            '{href}' => isset($item['href']) ? Url::to($item['href']) : 'javascript:void(0);',
-            '{title}' => isset($item['title']) ? $item['title'] :'',
-            '{target}' => isset($item['target']) ?$item['target']: '_self'
+                : Html::tag("i", "", ['class' => $item['icon']]),
+            '{href}' => ArrayHelper::getValue($item, 'href', 'javascript:void(0);'),
+            '{title}' => ArrayHelper::getValue($item, 'title', ''),
+            '{target}' => ArrayHelper::getValue($item, 'target', '_self'),
         ];
-
         $template = ArrayHelper::getValue($item, 'template', isset($item['href']) ? $linkTemplate : $textTemplate);
 
         return strtr($template, $replacements);
@@ -142,12 +149,97 @@ class DynamicMenuWidget extends \yii\widgets\Menu
     }
 
     /**
+     * Check if the item should be visible or not, according to user permissions.
+     * The `$item` should have a `visible_condition` string, which is a mix of permissions to be
+     * checked with `can()`.
+     * Multiple permissions can be concatenated either with `|` or `&`. They cannot be mixed, nor
+     * parenthesis can be used to mix conditions.
+     *
+     * @param array $item 
+     * @return boolean
+     */
+    private function _checkItemVisiblity($item)
+    {
+        $visible_condition = ArrayHelper::getValue($item, 'visible_condition');
+        if (empty($visible_condition)) {
+            return true;
+        }
+
+        $merge_condition = "&";
+        $result = true;
+        if (strpos($visible_condition, "&") !== false) {
+            $merge_condition = "&";
+            $result = true;
+        } else if (strpos($visible_condition, "|") !== false) {
+            $merge_condition = "|";
+            $result = false;
+        }
+
+        $conditions = $merge_condition != "" ? explode($merge_condition, $visible_condition) : [$visible_condition];
+        foreach ($conditions as $c) {
+            $c = trim($c);
+            $is_negated = false;
+            if (strpos($c, "!") === 0) {
+                $is_negated = true;
+                $c = substr($c, 1);
+            }
+            switch ($c) {
+                // Special cases first
+                case "ISGUEST":
+                    $result = $this->_mergeCondition($merge_condition, Yii::$app->user->isGuest, $is_negated, $result);
+                    break;
+                default:
+                    // Check permission by default
+                    $result = $this->_mergeCondition($merge_condition, Yii::$app->user->can($c), $is_negated, $result);
+                    break;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Merges a visibility condition with the `$current` status
+     * 
+     * @param string $merge_type either `|` or `&`, logical condition for merging the permissions
+     * @param boolean $check The check result
+     * @param boolean $is_negated Determines if the check should be negated or not
+     * @param boolean $current Current status to be merged with `$check`
+     * @return boolean `$check` logically joined to `$current` using `$merge_type`   
+     */
+    private function _mergeCondition($merge_type, $check, $is_negated, $current)
+    {
+        if ($merge_type == "|") {
+            $current |= $is_negated == false ? (bool)$check : !(bool)$check;
+        } else if ($merge_type == "&") {
+            $current &= $is_negated == false ? (bool)$check : !(bool)$check;
+        }
+        return $current;
+    }
+
+    /**
+     * Parses the href string, if it "looks like" a route array will attempt to reconstruct it for `Url::toRoute()`
+     *
+     * @param string $url If the string starts with a `[`, will attempt a basic array decode from the string
+     * @return string URL route
+     * @see https://stackoverflow.com/a/74044428/738852
+     */
+    private function _parseRoute($url)
+    {
+        if (preg_match_all('~(?:\G(?!^)|^\[["\'](?P<route>[\w\/]+)["\'])(?:,\s*["\'](?P<paramname>\w+)["\']\s*=>\s*["\']?(?P<paramval>\w+)?["\']?|)(?=.*?])~', $url, $matches, PREG_SET_ORDER, 0) == false) {
+            return Url::toRoute($url);
+        }
+        $base = array_merge([$matches[0]['route']], array_combine(ArrayHelper::getColumn($matches, "paramname"), ArrayHelper::getColumn($matches, "paramval")));
+        return Url::toRoute($base);
+    }
+
+    /**
      * @inheritdoc
      */
     protected function normalizeItems($items, &$active)
     {
         foreach ($items as $i => $item) {
-            if (isset($item['visible']) && !$item['visible']) {
+            if ($this->_checkItemVisiblity($item) == false) {
                 unset($items[$i]);
                 continue;
             }
@@ -157,6 +249,7 @@ class DynamicMenuWidget extends \yii\widgets\Menu
             $encodeLabel = isset($item['encode']) ? $item['encode'] : $this->encodeLabels;
             $items[$i]['text'] = $encodeLabel ? Html::encode($item['text']) : $item['text'];
             $items[$i]['icon'] = isset($item['icon']) ? $item['icon'] : '';
+            $items[$i]['href'] = $this->_parseRoute($item['href']);
             $hasActiveChild = false;
             if (isset($item['children'])) {
                 $items[$i]['children'] = $this->normalizeItems($item['children'], $hasActiveChild);

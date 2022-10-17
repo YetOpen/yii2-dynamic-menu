@@ -12,6 +12,7 @@ use Yii;
  * @property string $icon
  * @property string $class
  * @property string $url
+ * @property string $visible_condition
  *
  * @property MenuRole[] $menuRoles
  */
@@ -33,6 +34,7 @@ class Menu extends \yii\db\ActiveRecord
         return [
             [['label', 'icon', 'class', 'url'], 'required'],
             [['label', 'icon', 'class', 'url'], 'string', 'max' => 255],
+            [['visible_condition'], 'string', 'max' => 500],
         ];
     }
 
@@ -47,6 +49,7 @@ class Menu extends \yii\db\ActiveRecord
             'icon' => 'Icon',
             'class' => 'Class',
             'url' => 'Url',
+            'visible_condition' => 'Visibility condition',
         ];
     }
 

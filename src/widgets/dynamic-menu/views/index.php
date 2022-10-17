@@ -48,7 +48,7 @@ $rolesOptions = array_map(function($role){
                 'allowClear' => true
             ],
             'pluginEvents' => [
-                "change" => "function() { console.log('onchange');
+                "change" => "function() {
                     $('#roleName').empty();
                     $('#roleNameHead').empty();
                     $('#roleName').html($(this).find(':selected').val());
@@ -58,9 +58,7 @@ $rolesOptions = array_map(function($role){
                     $('#labelLoadedID').html('Loaded ID: NEW');
                     $('#panelMenus a[href=\"#menuView\"]').tab('show');
                     $('#role-modal').modal('hide');
-                   }",
-                "select2:selecting" => "function() { console.log('selecting');
-                   }",
+                }",
             ]
         ]);
         Modal::end();
@@ -111,6 +109,12 @@ $rolesOptions = array_map(function($role){
                         <label for="title" class="col-sm-2 control-label">Tooltip</label>
                         <div class="col-sm-10">
                             <input type="text" name="title" class="form-control item-menu" id="title" placeholder="Tooltip">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="visible_condition" class="col-sm-2 control-label">Visibility condition</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="visible_condition" class="form-control item-menu" id="visible_condition" placeholder="Visibility condition">
                         </div>
                     </div>
                 </form>

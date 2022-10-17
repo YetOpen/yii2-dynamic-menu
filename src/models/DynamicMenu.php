@@ -1,6 +1,8 @@
 <?php
 
     namespace esempla\dynamicmenu\models;
+    use Yii;
+    use yii\helpers\Json;
 
     /**
      * Class DynamicMenu
@@ -30,29 +32,30 @@
             $menuData = [];
             $dates = [];
             if ($roleName === null) {
-                $roles = \Yii::$app->authManager->getRolesByUser(\Yii::$app->user->getId());
+                $roleName = \Yii::$app->authManager->getRolesByUser(\Yii::$app->user->getId());
             }
-            if (!empty($roles)) {
-                $menu = self::find();
-                foreach ($roles as $key => $role) {
-                    $menu->orWhere(['role' => $key]);
-                }
-                $menu->andWhere(['status' => self::STATUS_ACTIVE]);
-                $menuData = $menu->orderBy("row_version DESC")->all();
+            $menu = self::find()->andWhere([
+                'status' => self::STATUS_ACTIVE,
+                'role' => array_keys($roleName),
+            ])->orderBy(["row_version" => SORT_DESC]);
+            $menuData = $menu->all();
 
-                if ($menuData) {
-                    $dates = [];
-                    $auxArray = [];
-                    foreach ($menuData as $data) {
-
-                        $dataJson = json_decode($data->menu_data, true);
-                        foreach ($dataJson as $dataJ) {
-                            if (!in_array($dataJ["href"], $auxArray)) {
-                                $dates[] = $dataJ;
-                                $auxArray[] = $dataJ["href"];
-                            }
-                        }
+            if (empty($menuData)) {
+                return $dates;
+            }
+            $dates = [];
+            $auxArray = [];
+            foreach ($menuData as $data) {
+                $dataJson = Json::decode($data->menu_data);
+                foreach ($dataJson as $dataJ) {
+                    // Skip duplicate href. Since we merge multiple menu per roles, this ensures the same menu item
+                    // is not added twice. This requires every item, even expandable ones, to have a different href
+                    // (not empty). Those items should have a unique "#anchor" link
+                    if (Yii::$app->getModule("menu")->skipDuplicateHref && in_array($dataJ["href"], $auxArray)) {
+                        continue;
                     }
+                    $dates[] = $dataJ;
+                    $auxArray[] = $dataJ["href"];
                 }
             }
 
@@ -65,7 +68,6 @@
         public function beforeSave($insert)
         {
             if (parent::beforeSave($insert)) {
-
                 //check if exist prev row_version set new version
                 $this->row_version = (integer)self::getLatestVersion() + 1;
                 $this->status = self::STATUS_ACTIVE;
@@ -158,12 +160,10 @@
          */
         public function remove()
         {
-            $previousMenu = $this->find()->where(['row_version' => $this->row_version - 1])->one();
-
-            if ($previousMenu) {
-                $previousMenu->status = self::STATUS_ACTIVE;
-                $previousMenu->save();
-            }
+            self::updateAll(['status' => self::STATUS_ACTIVE], [
+                'role' => $this->role,
+                'row_version' => $this->row_version - 1,
+            ]);
 
             $this->delete();
         }

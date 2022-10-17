@@ -113,6 +113,12 @@ $rolesOptions = array_map(function($role){
                             <input type="text" name="title" class="form-control item-menu" id="title" placeholder="Tooltip">
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label for="visible_condition" class="col-sm-2 control-label">Visibility condition</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="visible_condition" class="form-control item-menu" id="visible_condition" placeholder="Visible condition">
+                        </div>
+                    </div>
                 </form>
             </div>
             <div class="panel-footer">

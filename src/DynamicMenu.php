@@ -7,6 +7,9 @@ namespace esempla\dynamicmenu;
  */
 class DynamicMenu extends \yii\base\Module
 {
+    /** @var boolean Skip duplicate href found when merging menu items for the user */
+    public $skipDuplicateHref = true;
+
     /**
      * @inheritdoc
      */
@@ -18,7 +21,5 @@ class DynamicMenu extends \yii\base\Module
     public function init()
     {
         parent::init();
-
-        // custom initialization code goes here
     }
 }
