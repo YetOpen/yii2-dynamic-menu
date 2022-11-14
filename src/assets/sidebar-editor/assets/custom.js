@@ -132,7 +132,7 @@ var DynamicMenuComponent = {
 
             $.ajax({
                 data: {menuId:id},
-                url: '/menu/dynamic-menu/read',
+                url: $(this).attr('data-url'),
                 dataType: 'json',
                 type: 'POST',
                 success:function(data) {
@@ -195,7 +195,7 @@ var DynamicMenuComponent = {
                     data: {
                         menuId:id
                     },
-                    url: '/menu/dynamic-menu/delete',
+                    url: $(this).attr('data-url'),
                     dataType: 'json',
                     type: 'POST',
                     success:function(data) {
@@ -244,7 +244,7 @@ var DynamicMenuComponent = {
             if(dataMenu !=='' && roleName !==''){
                 $.ajax({
                     data: {role:roleName,menu_data:dataMenu},
-                    url: '/menu/dynamic-menu/create',
+                    url: $(this).attr('data-url'),
                     dataType: 'json',
                     type: 'POST',
                     success:function(response) {

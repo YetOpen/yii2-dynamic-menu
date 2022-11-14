@@ -1,8 +1,9 @@
 <?php
 /* @var $this yii\web\View */
 
-use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
+use yii\helpers\Url;
 use kartik\select2\Select2;
 use yii\web\JsExpression;
 use yii\bootstrap\Modal;
@@ -23,7 +24,7 @@ $roles = Yii::$app->authManager->getRoles();
 /**
  * Create an array of role names from role objects.
  */
-$rolesOptions = array_map(function($role){
+$rolesOptions = array_map(function ($role) {
     return $role->name;
 }, $roles);
 
@@ -38,7 +39,7 @@ $rolesOptions = array_map(function($role){
                 'tabindex' => false // important for Select2 to work properly
             ],
             'header' => '<h4 style="margin:0; padding:0">Select Role </h4>',
-            'toggleButton' => ['label' => 'Create New Menu', 'class' => 'btn btn-success','style' => 'margin-bottom:5px;'],
+            'toggleButton' => ['label' => 'Create New Menu', 'class' => 'btn btn-success', 'style' => 'margin-bottom:5px;'],
         ]);
         echo Select2::widget([
             'name' => 'role_menu',
@@ -126,7 +127,7 @@ $rolesOptions = array_map(function($role){
         </div>
         <div class="form-group">
             <button id="btnClear" type="button" class="btn btn-warning"><i class="glyphicon glyphicon-trash"></i> Clear</button>
-            <button id="btnSave" type="button" class="btn btn-success" data-loading-text="Saving..."><i class="glyphicon glyphicon-ok"></i> Save</button>
+            <button id="btnSave" type="button" class="btn btn-success" data-url="<?= Url::toRoute("/menu/dynamic-menu/create") ?>" data-loading-text="Saving..."><i class="glyphicon glyphicon-ok"></i> Save</button>
         </div>
         <div class="form-group">
             <textarea id="out" class="form-control" cols="50" rows="10"></textarea>
@@ -145,42 +146,42 @@ $rolesOptions = array_map(function($role){
                             <div class="table-responsive" style="overflow-y: scroll;overflow-x:hidden;  height:315px;">
                                 <table class="table" style="margin-bottom: 0px;">
                                     <thead>
-                                    <tr>
-                                        <th class="">ID</th>
-                                        <th class="">Role</th>
-                                        <th class="">Status</th>
-                                        <th class="">Version</th>
-                                        <th class="">Action</th>
-                                    </tr>
+                                        <tr>
+                                            <th class="">ID</th>
+                                            <th class="">Role</th>
+                                            <th class="">Status</th>
+                                            <th class="">Version</th>
+                                            <th class="">Action</th>
+                                        </tr>
                                     </thead>
-                                    <tbody class="selects" >
-                                    <?php
-                                    //$models = false;
-                                    if($menus){
-                                        foreach ($menus as $item_m){
-                                            ?>
-                                            <tr class="tritem" data-id="<?php echo $item_m->id;?>">
-                                                <td><?php echo $item_m->id;?></td>
-                                                <td><?php echo $item_m->role;?></td>
-                                                <td >
-                                                    <?php if ($item_m->status == 1 ): ?>
-                                                        <span class="label label-success">Active</span>
-                                                    <?php else: ?>
-                                                        <span class="label label-warning">Disabled</span>
-                                                    <?php endif;?>
-                                                </td>
-                                                <td><span class="label label-success"><?php echo $item_m->row_version;?></span></td>
-                                                <td>
+                                    <tbody class="selects">
+                                        <?php
+                                        //$models = false;
+                                        if ($menus) {
+                                            foreach ($menus as $item_m) {
+                                        ?>
+                                                <tr class="tritem" data-id="<?php echo $item_m->id; ?>">
+                                                    <td><?php echo $item_m->id; ?></td>
+                                                    <td><?php echo $item_m->role; ?></td>
+                                                    <td>
+                                                        <?php if ($item_m->status == 1) : ?>
+                                                            <span class="label label-success">Active</span>
+                                                        <?php else : ?>
+                                                            <span class="label label-warning">Disabled</span>
+                                                        <?php endif; ?>
+                                                    </td>
+                                                    <td><span class="label label-success"><?php echo $item_m->row_version; ?></span></td>
+                                                    <td>
 
-                                                    <button id="" class="btn btn-sm btn-primary btnItemLoadData" data-menu="<?php echo $item_m->id;?>" data-role="<?php echo $item_m->role;?>" data-version="<?php echo $item_m->row_version;?>"> Load Data</button>
-                                                    <button id="" class="btn btn-sm btn-danger btnItemDelete" data-menu="<?php echo $item_m->id;?>"><i class="fa fa-trash"></i> </button>
-                                                </td>
-                                            </tr>
-                                            <?php
+                                                        <button id="" class="btn btn-sm btn-primary btnItemLoadData" data-url="<?= Url::toRoute("/menu/dynamic-menu/url") ?>" data-menu="<?php echo $item_m->id; ?>" data-role="<?php echo $item_m->role; ?>" data-version="<?php echo $item_m->row_version; ?>"> Load Data</button>
+                                                        <button id="" class="btn btn-sm btn-danger btnItemDelete" data-url="<?= Url::toRoute("/menu/dynamic-menu/delete") ?>" data-menu="<?php echo $item_m->id; ?>"><i class="fa fa-trash"></i> </button>
+                                                    </td>
+                                                </tr>
+                                        <?php
+                                            }
                                         }
-                                    }
 
-                                    ?>
+                                        ?>
                                     </tbody>
                                 </table>
                             </div>
@@ -189,7 +190,8 @@ $rolesOptions = array_map(function($role){
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="panel panel-default">
-                                        <div class="panel-heading clearfix"><h5 class="pull-left">Menu</h5>
+                                        <div class="panel-heading clearfix">
+                                            <h5 class="pull-left">Menu</h5>
                                             <div class="pull-right">
                                                 <span class="label label-success" id="labelLoadedID"></span>
                                                 <span class="label label-success" id="labelLoadedROLE"></span>
