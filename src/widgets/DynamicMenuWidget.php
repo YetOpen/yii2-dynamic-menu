@@ -88,7 +88,7 @@ class DynamicMenuWidget extends \yii\widgets\Menu
             $textTemplate = $this->textTemplate;
             $linkTemplate = $this->linkTemplate;
         }
-//todo de adaugat un preg replace la icon  sa ramina numai fa fa-icon
+        //todo de adaugat un preg replace la icon  sa ramina numai fa fa-icon
         $replacements = [
             '{text}' => strtr($this->textTemplate, ['{text}' => $item['text'],]),
             '{icon}' => empty($item['icon']) ? $this->defaultIconHtml
@@ -184,7 +184,7 @@ class DynamicMenuWidget extends \yii\widgets\Menu
                 $c = substr($c, 1);
             }
             switch ($c) {
-                // Special cases first
+                    // Special cases first
                 case "ISGUEST":
                     $result = $this->_mergeCondition($merge_condition, Yii::$app->user->isGuest, $is_negated, $result);
                     break;
@@ -226,7 +226,8 @@ class DynamicMenuWidget extends \yii\widgets\Menu
      */
     private function _parseRoute($url)
     {
-        if (preg_match_all('~(?:\G(?!^)|^\[["\'](?P<route>[\w\/]+)["\'])(?:,\s*["\'](?P<paramname>\w+)["\']\s*=>\s*["\']?(?P<paramval>\w+)?["\']?|)(?=.*?])~', $url, $matches, PREG_SET_ORDER, 0) == false) {
+        $re = '/(?:\G(?!^)|^\[["\'](?P<route>[\w\/\-]+)["\'])(?:,\s*["\'](?P<paramname>\w+)["\']\s*=>\s*["\']?(?P<paramval>[\\\\\w]+)?["\']?|)(?=.*?])/';
+        if (preg_match_all($re, $url, $matches, PREG_SET_ORDER, 0) == false) {
             return Url::toRoute($url);
         }
         $base = array_merge([$matches[0]['route']], array_combine(ArrayHelper::getColumn($matches, "paramname"), ArrayHelper::getColumn($matches, "paramval")));
