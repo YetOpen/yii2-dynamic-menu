@@ -99,6 +99,12 @@ $rolesOptions = array_map(function ($role) {
                         </div>
                     </div>
                     <div class="form-group">
+                        <label for="href" class="col-sm-2 control-label">Additional URI</label>
+                        <div class="col-sm-10">
+                            <textarea type="text" class="form-control item-menu" id="additional_href" name="additional_href" placeholder="Additional URI"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label for="target" class="col-sm-2 control-label">Target</label>
                         <div class="col-sm-10">
                             <select name="target" id="target" class="form-control item-menu">
