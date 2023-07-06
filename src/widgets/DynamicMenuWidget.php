@@ -287,24 +287,15 @@ class DynamicMenuWidget extends \yii\widgets\Menu
      */
     protected function isItemActive($item)
     {
-        if (isset($item['href']) && is_array($item['href']) && isset($item['href'][0])) {
-            $route = $item['href'][0];
-            if ($route[0] !== '/' && Yii::$app->controller) {
-                $route = ltrim(Yii::$app->controller->module->getUniqueId() . '/' . $route, '/');
-            }
-            $route = ltrim($route, '/');
-            if ($route != $this->route && $route !== $this->noDefaultRoute && $route !== $this->noDefaultAction) {
-                return false;
-            }
-            unset($item['href']['#']);
-            if (count($item['href']) > 1) {
-                foreach (array_splice($item['href'], 1) as $name => $value) {
-                    if ($value !== null && (!isset($this->params[$name]) || $this->params[$name] != $value)) {
-                        return false;
-                    }
-                }
-            }
-            return true;
+        if (!isset($item['href'])) return false;
+
+        $href = Url::to($item['href']);
+        if($href == Url::current()) return true;
+
+        if(!isset($item['additional_href'])) return false;
+        $addHref = explode("\n", $item['additional_href']);
+        foreach($addHref as $ref){
+            if($ref == Url::current()) return true;
         }
         return false;
     }
