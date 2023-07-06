@@ -8,7 +8,7 @@ Rendering is based on `dmstr/yii2-adminlte-asset` menu widget.
 
 The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
 
-> Note: Check the [composer.json](https://packagist.org/packages/esempla/yii2-rbac) for this extension's requirements and dependencies.
+>__Note__ Check the [composer.json](https://packagist.org/packages/esempla/yii2-rbac) for this extension's requirements and dependencies.
 Read this [web tip /wiki](https://packagist.org/packages/esempla/yii2-rbac) on setting the `minimum-stability` settings for your application's composer.json.
 
 Either run
@@ -66,7 +66,31 @@ a string or an array of strings.
 
 ## Menus management
 
-To access Dynamic Menu management, go to app route `/menu/dynamic-menu`
+>__Note__ To access Dynamic Menu management, go to app route `/menu/dynamic-menu`.
+> In that page there is a dedicated setup for configuring the sidebar menu. 
+
+These are the options you will see (Edit item):
+* text | the label text of the menu option
+* URL | the url that the menu option will redirect the page to
+* additional URI | see description below
+* target | HTML, specifies where will the URL be shown (check HTML docs)
+* tooltip
+* visibility condition | specified role (or roles) that can see the menu option
+
+#### DESCRIPTION
+If you want to add more than one URI (let's say that in your action you rendere a different view based on a specific action, eg: based on the current date, role of the user, permissions, etc...),
+you can do that, by adding more than one URL, using the additional URI text area.
+_When adding multiple URI, it's important to note that there is no separator to distinguish them._
+So the only rule used to distinguish them is by adding a different URI in a new line (don't add literally a `\n`!)
+> For example:
+> ```
+>                 ┌──────────────────────────────┐
+> additional URI: │ /controller/action           │
+>                 │ /default                     │
+>                 └──────────────────────────────┘
+> ```
+> __Note__
+> Remember **NOT** to put the `''` or the `""` for the URI and the URL!
 
 ### Item fields
 
