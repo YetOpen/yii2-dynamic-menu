@@ -90,7 +90,7 @@ class DynamicMenuWidget extends \yii\widgets\Menu
         }
         //todo de adaugat un preg replace la icon  sa ramina numai fa fa-icon
         $replacements = [
-            '{text}' => strtr($this->textTemplate, ['{text}' => $item['text'],]),
+            '{text}' => strtr($this->textTemplate, ['{text}' => Yii::t('dynamicmenu', $item['text']),]),
             '{icon}' => empty($item['icon']) ? $this->defaultIconHtml
                 : Html::tag("i", "", ['class' => $item['icon']]),
             '{href}' => ArrayHelper::getValue($item, 'href', 'javascript:void(0);'),
